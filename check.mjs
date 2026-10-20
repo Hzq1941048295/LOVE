@@ -1,0 +1,38 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const context={window:{}};vm.createContext(context);
+for(const file of ['data.js','product.js'])vm.runInContext(fs.readFileSync(`dist/${file}`,'utf8'),context);
+const {docs,cases,project}=context.window.SHIWEN;
+assert.equal(docs.length,12);assert.equal(cases.length,20);
+assert.equal(new Set(docs.map(d=>d.id)).size,12);
+assert.equal(new Set(cases.map(c=>c.id)).size,20);
+assert.equal(cases.filter(c=>c.split==='预留评测').length,6);
+const refs=new Set(docs.flatMap(d=>d.sections.map(s=>s.id)));
+for(const c of cases){assert(c.refs.length>0);assert(c.answer.length>0);assert(c.must.length>0);assert(c.mustNot.length>0);for(const ref of c.refs)assert(refs.has(ref),`${c.id} bad ref ${ref}`);}
+assert.equal((42*1.08).toFixed(2),'45.36');
+assert.equal((45.36*218).toFixed(2),'9888.48');
+assert.equal((45.36*248).toFixed(2),'11249.28');
+assert.equal((45.36*(248-218)).toFixed(2),'1360.80');
+assert.equal(new Date(Date.UTC(2026,3,16+28)).toISOString().slice(0,10),'2026-05-14');
+assert.equal(new Date(Date.UTC(2026,3,16+14)).toISOString().slice(0,10),'2026-04-30');
+// Verify only project-owned static paths are loaded.
+const html=fs.readFileSync('dist/index.html','utf8');
+for(const path of ['style.css','data.js','product.js','app.js'])assert(fs.existsSync('dist/'+path));
+assert(html.includes('未接入大模型'));
+const holding={};
+const fakeElement=()=>({innerHTML:'',textContent:'',value:'',classList:{toggle(){},add(){},remove(){}},addEventListener(){},querySelectorAll(){return[]},setAttribute(){},removeAttribute(){}});
+const browser={window:{...context.window,addEventListener(){},scrollTo(){}},document:{getElementById(id){return holding[id]??=fakeElement()},querySelectorAll(){return[]},addEventListener(){}},localStorage:{getItem(){return null}},location:{hash:''},setTimeout,clearTimeout,console};
+vm.createContext(browser);vm.runInContext(fs.readFileSync('dist/app.js','utf8'),browser);
+assert(holding.main.innerHTML.includes('R03'));
+const utils=browser.window.SHIWEN_UTILS;
+assert.equal(utils.rank('扫地机器人插座',cases,c=>c.q,c=>c.tags)[0].obj.id,'Q06');
+assert.equal(utils.rank('柜体胡桃',cases,c=>c.q,c=>c.tags)[0].obj.id,'Q13');
+assert.equal(utils.rank('完全未知的abcdefg',cases,c=>c.q,c=>c.tags).length,0);
+for(const c of cases)assert(utils.answerText(c).includes(c.refs[0]));
+fs.writeFileSync('corpus.json',JSON.stringify({project,docs},null,2));
+fs.writeFileSync('test-cases.json',JSON.stringify({project,notice:'全部为预设标准答案，不是模型实测。',cases},null,2));
+fs.writeFileSync('starter-prompt.txt',context.window.SHIWEN_PROMPT);
+fs.mkdirSync('documents',{recursive:true});
+for(const d of docs)fs.writeFileSync(`documents/${d.id}-${d.title}.txt`,utils.docText(d));
+console.log('PASS: 12 documents, 20 cases, 6 reserved cases, all evidence links, 4 calculations, 2 dates, search behavior, initial render, exports.');

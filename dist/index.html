@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="拾问：室内设计项目资料助手。虚构样板间、20道评测题与可追溯的版本核对演示。">
+  <title>拾问 · 室内设计项目资料助手</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="#workspace"><span class="brandmark">拾</span><span>拾问<small>SHIWEN / DESIGN DESK</small></span></a>
+      <div class="project-label">当前项目</div>
+      <div class="project-card"><span class="project-icon">⌂</span><strong>澄园 · 128㎡样板间</strong><span>CY-128 · 虚构教学项目</span></div>
+      <nav aria-label="主导航">
+        <a href="#workspace" data-nav="workspace"><span>01</span>问资料</a>
+        <a href="#library" data-nav="library"><span>02</span>项目资料库 <small>12</small></a>
+        <a href="#cases" data-nav="cases"><span>03</span>20题评测集</a>
+        <a href="#saved" data-nav="saved"><span>04</span>个人演示记录</a>
+        <a href="#product" data-nav="product"><span>05</span>产品方案与接入</a>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot"></span> 产品原型 · 预设案例<br><small>未接入大模型，不代表 AI 实测效果。<br>所有项目资料、角色与价格均为虚构。</small></div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar"><span>设计协作 / <strong id="page-title">问资料</strong></span><span class="case-clock">案例时点 <b>2026.04.16</b></span></header>
+      <main id="main" tabindex="-1"></main>
+      <footer>拾问 SHIWEN <span>让每一次确认，都有出处。</span><span>本原型不作真实施工、合规或采购依据。</span></footer>
+    </div>
+  </div>
+  <dialog id="doc-dialog" aria-labelledby="doc-title"><div id="doc-content"></div></dialog>
+  <dialog id="draft-dialog" aria-labelledby="draft-title"><div id="draft-content"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="data.js"></script><script src="product.js"></script><script src="app.js"></script>
+</body>
+</html>
